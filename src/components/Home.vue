@@ -43,7 +43,7 @@
       <el-container>
         <el-main>
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/init' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item v-text="this.$router.currentRoute.name"></el-breadcrumb-item>
           </el-breadcrumb>
           <keep-alive>
@@ -57,9 +57,11 @@
 </template>
 <script>
   import {getRequest} from '../utils/api'
-  export default{
+
+  export default {
     methods: {
-      handleCommand(command){
+
+      handleCommand(command) {
         var _this = this;
         if (command == 'logout') {
           this.$confirm('注销登录吗?', '提示', {
@@ -73,31 +75,35 @@
           }, function () {
             //取消
           })
-        }
-        else if (command == 'sysMsg'){
+        } else if (command == 'sysMsg') {
 
+        } else if (command == 'MyHome') {
+          _this.$router.replace({path: '/personal'})
         }
-        else if (command =='MyHome'){
-          _this.$router.replace({path:'/personal'})
-        }
-      }
+      },
+      getUserName() {
+        let _this = this;
+        getRequest("/currentUserName").then(function (msg) {
+          _this.currentUserName = msg.data;
+        }, function () {
+          _this.currentUserName = '游客';
+        });
+      },
+      // timer() {
+      //   return setInterval(() => {
+      //     this.getUserName()
+      //   }, (1000 * 60 * 5))
+      // }
     },
     mounted: function () {
-      this.$alert('为了确保所有的小伙伴都能看到完整的数据演示，数据库只开放了查询权限和部分字段的更新权限，其他权限都不具备，完整权限的演示需要大家在自己本地部署后，换一个正常的数据库用户后即可查看，这点请大家悉知!', '友情提示', {
-        confirmButtonText: '确定',
-        callback: action => {
-        }
-      });
       var _this = this;
-      getRequest("/currentUserName").then(function (msg) {
-        _this.currentUserName = msg.data;
-      }, function (msg) {
-        _this.currentUserName = '游客';
-      });
+      _this.$router.replace({path: '/init'})
+      _this.getUserName();
+      // _this.timer();
     },
-    data(){
+    data() {
       return {
-        currentUserName: ''
+        currentUserName: '游客',
       }
     }
   }

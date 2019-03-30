@@ -3,12 +3,13 @@ import Router from 'vue-router'
 import Login from "@/components/Login";
 import Reg from "@/components/Reg";
 import Home from "@/components/Home";
-import Category from "@/components/Category";
-import AddDrug from "@/components/AddDrug";
-import DrugList from "@/components/DrugList";
+import CategoryList from "@/components/CategoryList";
+import MedicineAdd from "@/components/MedicineAdd";
+import MedicineList from "@/components/MedicineList";
 import OrderList from "@/components/OrderList";
 import OrderAdd from "@/components/OrderAdd";
 import Personal from "@/components/Personal";
+import Init from "@/components/Init";
 
 
 Vue.use(Router)
@@ -27,24 +28,23 @@ export default new Router({
       hidden: true,
       component: Reg
     },
-    {
-      path: '/home',
-      name: '',
-      hidden: true,
-      component: Home
-    }, {
+     {
       path: '/home',
       component: Home,
       name: '',
       hidden: true,
       children: [
         {
+          path:'/init',
+          component:Init,
+          name:''
+        },
+        {
           path: '/personal',
           component: Personal,
           name: '个人中心'
         }
       ]
-
     }, {
       path: '/home',
       component: Home,
@@ -54,7 +54,7 @@ export default new Router({
           path: '/category',
           iconCls: 'fa fa-reorder',
           name: '类别管理',
-          component: Category
+          component: CategoryList
         }
       ]
     }
@@ -65,17 +65,17 @@ export default new Router({
       name: '药品管理',
       children: [
         {
-          path: '/druglist',
+          path: '/medicines',
           name: '药品列表',
-          component: DrugList,
+          component: MedicineList,
           meta: {
-            keepAlive: true
+            keepAlive: false
           }
         },
         {
-          path: '/drugadd',
+          path: '/addmedicine',
           name: '药品添加',
-          component: AddDrug,
+          component: MedicineAdd,
           meta: {
             keepAlive: false
           }

@@ -1,10 +1,10 @@
 <template>
-<h1>druglist</h1>
+    <h1>Init</h1>
 </template>
 
 <script>
     export default {
-        name: "DrugList"
+        name: "Init"
     }
 </script>
 
