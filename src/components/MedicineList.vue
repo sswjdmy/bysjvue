@@ -31,9 +31,7 @@
         :data="medicines"
         stripe
         border
-        fit="false"
-        height="500"
-        style="width: 100%">
+        height="500">
         <el-table-column
           fixed
           type="index"
@@ -50,8 +48,6 @@
           label="类型名"
           width="100">
         </el-table-column>
-
-
         <el-table-column
           prop="medicine.prescription"
           label="处方药"
@@ -59,14 +55,16 @@
           <template slot-scope="scope">
             <el-tag
               :type="scope.row.medicine.prescription  ? 'danger' : 'success'"
-              disable-transitions>{{scope.row.medicine.prescription?'是':'否'}}</el-tag>
+              disable-transitions>{{scope.row.medicine.prescription?'是':'否'}}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column
           show-overflow-tooltip
+
           prop="medicine.medicineDescribe"
           label="描述"
-          max-length ="10"
+          max-length="10"
           width="200">
         </el-table-column>
         <el-table-column
@@ -83,14 +81,53 @@
         <el-table-column
           prop="addTime"
           label="添加时间"
-          width="180">
+          width="160">
         </el-table-column>
         <el-table-column
           prop="operation"
           label="操作"
-          width="150">
+          width="190">
           <template slot-scope="scope">
-            <el-button style="margin-left: 30px" @click="deleteClick(scope.row)" type="danger">删除</el-button>
+            <el-row>
+              <el-button @click="deleteClick(scope.row)" type="danger">删除</el-button>
+              <el-button @click="showDialog(scope.row)" type="primary">修改</el-button>
+
+            </el-row>
+
+            <el-dialog title="药品修改" :modal-append-to-body="false" :visible.sync="dialogVisible">
+              <el-form ref="form" :rules="rules" :model="form" class="medicine-add-container" label-position="left"
+                       label-width="80px" v-loading="loading">
+                <el-form-item label="药品名称" prop="medicineName">
+                  <el-input v-model="form.medicineName" max_length="20"
+                            style="display: flex;justify-content: flex-start ;"></el-input>
+                </el-form-item>
+                <el-form-item label="药品类型">
+                  <span>{{form.selectType}}</span>
+                </el-form-item>
+                <el-form-item label="处方药" prop="prescription">
+                  <el-switch v-model="form.prescription"
+                             style="display: flex;justify-content: flex-start; margin-top:10px;"></el-switch>
+                </el-form-item>
+                <el-form-item label="价格" prop="charge">
+                  <el-input-number v-model.number="form.charge" :precision="2" :min="0" :max="100000"
+                                   style="display: flex;justify-content: flex-start ;"></el-input-number>
+                </el-form-item>
+                <el-form-item label="数量" prop="medicineNumber">
+
+                  <el-input-number v-model.number="form.medicineNumber" :min="0" :max="100000"
+                                   style="display: flex;justify-content: flex-start ;"></el-input-number>
+                </el-form-item>
+                <el-form-item label="药品描述" prop="medicineDescribe">
+                  <el-input type="textarea" v-model="form.medicineDescribe"
+                            :autosize="{ minRows: 4, maxRows: 4}"></el-input>
+                </el-form-item>
+              </el-form>
+              <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="submitForm('form')">确 定</el-button>
+              </div>
+            </el-dialog>
+
           </template>
         </el-table-column>
       </el-table>
@@ -110,14 +147,41 @@
   export default {
     data() {
       return {
-        loading:false,
-        medicines:[],
-        types:[],
-        keywords:'',
-        selectType:'',
-        pageSize:6,
-        totalCount:-1,
-        currentPage:1
+        rules: {
+          medicineName: [
+            {required: true, message: '请输入药品名称', trigger: 'blur'},
+            {max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur'}
+          ],
+          charge: [
+            {required: true, message: '请输入价格', trigger: 'change'},
+          ],
+          medicineNumber: [
+            {required: true, message: '请输入数量', trigger: 'change'},
+          ],
+          medicineDescribe: [
+            {required: true, message: '请输入药品描述', trigger: 'blur'},
+          ]
+        },
+        //update form
+        form: {
+          id: '',
+          medicineName: '',
+          prescription: '',
+          selectType: '',
+          charge: '',
+          medicineNumber: '',
+          medicineDescribe: ''
+        },
+        formLabelWidth: '120px',
+        dialogVisible: false,
+        loading: false,
+        medicines: [],
+        types: [],
+        keywords: '',
+        selectType: '',
+        pageSize: 6,
+        totalCount: -1,
+        currentPage: 1
       };
     },
     mounted() {
@@ -126,7 +190,59 @@
       this.loadMedicine(1, this.pageSize)
     },
     methods: {
-      loadTypes(){
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.dialogVisible = false;
+            this.updateMedicine(formName);
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      updateMedicine(formName) {
+        let _this = this;
+        _this.loading = true;
+        console.log(_this.form.prescription)
+        putRequest('medicine/update', {
+          id: _this.form.id,
+          medicineName: _this.form.medicineName,
+          prescription: _this.form.prescription,
+          charge: _this.form.charge,
+          medicineNumber: _this.form.medicineNumber,
+          medicineDescribe: _this.form.medicineDescribe
+        }).then(resp => {
+          this.loading = false
+          if (resp.status == 200) {
+            _this.currentChange(_this.currentPage);
+            let json = resp.data;
+            if (json.status == 'success') {
+              this.$message({
+                message: '修改成功！',
+                type: 'success'
+              });
+            } else {
+              this.$message.error(json.msg);
+            }
+          }
+        }, resp => {
+          this.loading = false;
+          this.$message.error('修改失败！找不到服务器⊙﹏⊙∥!');
+        })
+      },
+      showDialog(row) {
+        let _this = this;
+        _this.form.id = row.medicine.id;
+        _this.form.medicineName = row.medicine.medicineName;
+        _this.form.selectType = row.mType.cateName;
+        _this.form.prescription = row.medicine.prescription;
+        _this.form.charge = row.medicine.charge;
+        _this.form.medicineNumber = row.medicine.medicineNumber;
+        _this.form.medicineDescribe = row.medicine.medicineDescribe;
+        _this.dialogVisible = true;
+      },
+      loadTypes() {
         {
           let _this = this;
           getRequest('/type/getall').then(resp => {
@@ -149,15 +265,15 @@
           })
         }
       },
-      loadMedicine(page,count){
+      loadMedicine(page, count) {
         let _this = this;
         let url = '';
         if (this.selectType == '') {
           url = "/medicine/all" + "?page=" + page + "&count=" + count + "&keywords=" + this.keywords;
         } else {
-          url = "/medicine/getByType"+"?tid="+_this.selectType+"&page=" + page + "&count=" + count + "&keywords=" + this.keywords;
+          url = "/medicine/getByType" + "?tid=" + _this.selectType + "&page=" + page + "&count=" + count + "&keywords=" + this.keywords;
         }
-        getRequest(url).then(resp=> {
+        getRequest(url).then(resp => {
           _this.loading = false;
           if (resp.status == 200) {
             // let meds = [];
@@ -170,14 +286,14 @@
           } else {
             _this.$message({type: 'error', message: '数据加载失败!'});
           }
-        }, resp=> {
+        }, resp => {
           _this.loading = false;
           if (resp.response.status == 403) {
             _this.$message({type: 'error', message: resp.response.data});
           } else {
             _this.$message({type: 'error', message: '数据加载失败!'});
           }
-        }).catch(resp=> {
+        }).catch(resp => {
           //压根没见到服务器
           _this.loading = false;
           _this.$message({type: 'error', message: '数据加载失败!'});
@@ -203,19 +319,27 @@
           _this.$message({type: 'error', message: '删除失败!'});
         });
       },
-      serchClick(){
+      serchClick() {
         this.loadMedicine(1, this.pageSize);
       },
-      currentChange(currentPage){
+      currentChange(currentPage) {
         this.currentPage = currentPage;
         this.loading = true;
         this.loadMedicine(currentPage, this.pageSize);
       }
     },
-
   }
 </script>
 
+
+<!--element ui table的show-overflow-tooltip属性以及设置其宽度-->
+<!--https://blog.csdn.net/scy_fighting/article/details/87795216   -->
+<style>
+  .el-tooltip__popper {
+    max-width: 800px;
+    line-height: 180%;
+  }
+</style>
 <style scoped>
 
 </style>

@@ -8,9 +8,8 @@
     {{currentUserName}}<i class="el-icon-arrow-down el-icon--right home_userinfo"></i>
   </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="sysMsg">系统消息</el-dropdown-item>
-            <el-dropdown-item command="MyArticle">我的文章</el-dropdown-item>
-            <el-dropdown-item command="MyHome">个人主页</el-dropdown-item>
+            <el-dropdown-item command="MyHome">个人中心</el-dropdown-item>
+            <el-dropdown-item command="Help">帮助</el-dropdown-item>
             <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -75,8 +74,6 @@
           }, function () {
             //取消
           })
-        } else if (command == 'sysMsg') {
-
         } else if (command == 'MyHome') {
           _this.$router.replace({path: '/personal'})
         }
