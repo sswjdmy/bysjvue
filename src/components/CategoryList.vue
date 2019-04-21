@@ -17,7 +17,7 @@
         stripe
         border
         height="500"
-        style="width: 100%">
+        style="width:90%">
         <el-table-column
           type="index"
           label="编号"

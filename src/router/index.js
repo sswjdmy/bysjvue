@@ -10,6 +10,7 @@ import OrderList from "@/components/OrderList";
 import OrderAdd from "@/components/OrderAdd";
 import Personal from "@/components/Personal";
 import Init from "@/components/Init";
+import MemberList from "@/components/MemberList";
 
 
 Vue.use(Router)
@@ -92,7 +93,7 @@ export default new Router({
           name: '订单列表',
           component: OrderList,
           meta: {
-            keepAlive: true
+            keepAlive: false
           }
         }, {
           path: '/orderadd',
@@ -101,6 +102,19 @@ export default new Router({
           mata: {
             keepAlive: false
           }
+        }
+      ]
+    },
+    {
+      path: '/home',
+      component: Home,
+      name: '',
+      children: [
+        {
+          path: '/member',
+          iconCls: 'fa fa-user-o ',
+          name: '会员管理',
+          component: MemberList
         }
       ]
     }

@@ -31,7 +31,7 @@
         :data="medicines"
         stripe
         border
-        height="500">
+        height="502">
         <el-table-column
           fixed
           type="index"
@@ -61,7 +61,6 @@
         </el-table-column>
         <el-table-column
           show-overflow-tooltip
-
           prop="medicine.medicineDescribe"
           label="描述"
           max-length="10"
@@ -179,7 +178,7 @@
         types: [],
         keywords: '',
         selectType: '',
-        pageSize: 6,
+        pageSize: 7,
         totalCount: -1,
         currentPage: 1
       };

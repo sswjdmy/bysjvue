@@ -24,7 +24,7 @@
     </el-form-item>
     <el-form-item label="数量" prop="medicineNumber">
 
-      <el-input-number v-model.number="form.medicineNumber" :min="0" :max="100000" style="display: flex;justify-content: flex-start ;"></el-input-number>
+      <el-input-number v-model.number="form.medicineNumber" :min="0" :max="1000" style="display: flex;justify-content: flex-start ;"></el-input-number>
     </el-form-item>
     <el-form-item label="药品描述" prop="medicineDescribe">
       <el-input type="textarea" v-model="form.medicineDescribe" :autosize="{ minRows: 4, maxRows: 10}"></el-input>
