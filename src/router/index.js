@@ -11,6 +11,7 @@ import OrderAdd from "@/components/OrderAdd";
 import Personal from "@/components/Personal";
 import Init from "@/components/Init";
 import MemberList from "@/components/MemberList";
+import SalesStatistics from "@/components/SalesStatistics";
 
 
 Vue.use(Router)
@@ -79,6 +80,14 @@ export default new Router({
           component: MedicineAdd,
           meta: {
             keepAlive: false
+          }
+        },
+        {
+          path:'/salesStatistics',
+          name:'销量统计',
+          component:SalesStatistics,
+          meta:{
+            keepAlive:false
           }
         }
       ]

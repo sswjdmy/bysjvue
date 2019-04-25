@@ -366,7 +366,26 @@
           _this.member = '';
         })
       },
-      cancleOrder(){},
+      cancleOrder(){
+        let _this = this;
+        _this.loading = true;
+        let url = "/order/del" + "?orderNumber="+_this.orderinfo.orderNumber;
+        getRequest(url).then(resp => {
+            _this.loading = false;
+          if (resp.status == 200) {
+            _this.payDialogVisible = false;
+            let data = resp.data;
+            _this.$message({type: data.status, message: data.msg});
+          } else {
+            _this.$message({type: 'error', message: '删除失败!'});
+          }
+          _this.loading = false;
+        }, resp => {
+          _this.payDialogVisible = false;
+          _this.loading = false;
+          _this.$message({type: 'error', message: '删除失败!'});
+        });
+      },
       pushSelect(row) {
         let _this = this;
         let id = row.medicine.id;
